@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
@@ -34,7 +35,9 @@ class AuthService {
         await _secureStorage.write(key: 'access_token', value: accessToken);
         await _secureStorage.write(key: 'refresh_token', value: refreshToken);
 
-        print('Login Succesful! Tokens secured.');
+        if (kDebugMode) {
+          print('Login Succesful! Tokens secured.');
+        }
         return true;
       }
 
@@ -42,13 +45,19 @@ class AuthService {
     } on DioException catch (e) {
       // Backend protections
       if (e.response?.statusCode == 429) {
-        print(
-          'Error: Rate limit exceeded! Backend response: ${e.response?.data["error"]}',
-        );
+       if (kDebugMode) {
+         print(
+           'Error: Rate limit exceeded! Backend response: ${e.response?.data["error"]}',
+         );
+       }
       } else if (e.response?.statusCode == 401) {
-        print('Error: Invalid credentials.');
+        if (kDebugMode) {
+          print('Error: Invalid credentials.');
+        }
       } else {
-        print('Network error: ${e.message}');
+        if (kDebugMode) {
+          print('Network error: ${e.message}');
+        }
       }
       return false;
     }
