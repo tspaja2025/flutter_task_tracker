@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:flutter_task_tracker/providers/auth_mode_provider.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(const ProviderScope(child: FlutterTaskTracker()));
@@ -12,471 +10,755 @@ class FlutterTaskTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShadcnApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Task Tracker',
-      theme: ThemeData(colorScheme: ColorSchemes.darkNeutral),
-      home: const DashboardScreen(),
-    );
-  }
-}
-
-class AuthScreen extends ConsumerWidget {
-  const AuthScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mode = ref.watch(authModeProvider);
-
-    return Scaffold(
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.purple,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              alignment: Alignment.center,
-              child: Text("T").x2Large.bold,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              "TaskTrack",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-            ),
-            const Text("Precision task management for professionals."),
-            const SizedBox(height: 16),
-            switch (mode) {
-              AuthMode.signIn => SignInForm(mode: mode),
-              AuthMode.signUp => SignUpForm(mode: mode),
-            },
-          ],
-        ),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
+      home: const RegisterScreen(),
     );
   }
 }
 
-class SignInForm extends ConsumerStatefulWidget {
-  final AuthMode mode;
-
-  const SignInForm({super.key, required this.mode});
-
-  @override
-  ConsumerState<SignInForm> createState() => _SignInForm();
-}
-
-class _SignInForm extends ConsumerState<SignInForm> {
-  CheckboxState _isChecked = CheckboxState.unchecked;
-
-  @override
-  Widget build(BuildContext context) {
-    final notifier = ref.read(authModeProvider.notifier);
-
-    return SizedBox(
-      width: 420,
-      child: Column(
-        children: [
-          Card(
-            borderWidth: 2,
-            borderColor: Colors.gray,
-            borderRadius: BorderRadius.circular(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  "Welcome back",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                const SizedBox(height: 16),
-                FormField(
-                  key: FormKey(#email),
-                  label: Text("Email Address"),
-                  child: TextField(
-                    placeholder: Text("name@company.com"),
-                    features: [
-                      InputFeature.leading(Icon(LucideIcons.mail)),
-                      InputFeature.clear(
-                        visibility: InputFeatureVisibility.textNotEmpty,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                FormField(
-                  key: FormKey(#password),
-                  label: Text("Password"),
-                  child: TextField(
-                    placeholder: Text("Password"),
-                    features: [
-                      InputFeature.leading(Icon(LucideIcons.lock)),
-                      InputFeature.clear(
-                        visibility: InputFeatureVisibility.textNotEmpty,
-                      ),
-                      InputFeature.passwordToggle(
-                        mode: PasswordPeekMode.toggle,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Checkbox(
-                  trailing: Text(
-                    "Stay signed in for 30 days",
-                    style: TextStyle(fontSize: 12),
-                  ),
-                  state: _isChecked,
-                  onChanged: (value) {
-                    setState(() {
-                      _isChecked = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                PrimaryButton(
-                  onPressed: () {
-                    context.goNamed("dashboard");
-                  },
-                  alignment: Alignment.center,
-                  child: const Text("Sign In"),
-                ),
-                const SizedBox(height: 16),
-                OutlineButton(
-                  onPressed: () {},
-                  alignment: Alignment.center,
-                  child: const Text("Quick fill demo user"),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text("Don't have an account?"),
-              const SizedBox(height: 4),
-              TextButton(
-                onPressed: () {
-                  notifier.setMode(AuthMode.signUp);
-                },
-                child: const Text("Create an account"),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Text("&copy; TASKTRACK. ALL RIGHTS RESERVED.").small.muted,
-        ],
-      ),
-    );
-  }
-}
-
-class SignUpForm extends ConsumerStatefulWidget {
-  final AuthMode mode;
-
-  const SignUpForm({super.key, required this.mode});
-
-  @override
-  ConsumerState<SignUpForm> createState() => _SignUpForm();
-}
-
-class _SignUpForm extends ConsumerState<SignUpForm> {
-  CheckboxState _isChecked = CheckboxState.unchecked;
-
-  @override
-  Widget build(BuildContext context) {
-    final notifier = ref.read(authModeProvider.notifier);
-
-    return SizedBox(
-      width: 420,
-      child: Column(
-        children: [
-          Card(
-            borderWidth: 2,
-            borderColor: Colors.gray,
-            borderRadius: BorderRadius.circular(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  "Create your workspace",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                Text(
-                  "Experience the flow of professional task management.",
-                  style: TextStyle(fontSize: 12, color: Colors.gray[600]),
-                ),
-                const SizedBox(height: 16),
-                FormField(
-                  key: FormKey(#fullName),
-                  label: Text("Full Name"),
-                  child: TextField(placeholder: Text("John Doe")),
-                ),
-                const SizedBox(height: 16),
-                FormField(
-                  key: FormKey(#emailAddress),
-                  label: Text("Email Address"),
-                  child: TextField(placeholder: Text("name@company.com")),
-                ),
-                const SizedBox(height: 16),
-                FormField(
-                  key: FormKey(#password),
-                  label: Text("Password"),
-                  child: TextField(placeholder: Text("Min. 8 characters")),
-                ),
-                const SizedBox(height: 16),
-                Checkbox(
-                  trailing: Text(
-                    "I agree to the Terms of Service and Privacy Policy",
-                    style: TextStyle(fontSize: 12),
-                  ),
-                  state: _isChecked,
-                  onChanged: (value) {
-                    setState(() {
-                      _isChecked = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                PrimaryButton(
-                  onPressed: () {
-                    context.goNamed("projects");
-                  },
-                  alignment: Alignment.center,
-                  child: const Text("Create Account"),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text("Already have an account?"),
-              const SizedBox(height: 4),
-              TextButton(
-                onPressed: () {
-                  notifier.setMode(AuthMode.signIn);
-                },
-                child: const Text("Sign In"),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
-
-  @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-  bool expanded = true;
-  String selected = "Home";
-
-  NavigationItem buildButton(String text, IconData icon) {
-    return NavigationItem(
-      label: Text(text),
-      // alignment: Alignment.centerLeft,
-      selectedStyle: const ButtonStyle.primaryIcon(),
-      selected: selected == text,
-      onChanged: (selected) {
-        if (selected) {
-          setState(() {
-            this.selected = text;
-          });
-        }
-      },
-      child: Icon(icon),
-    );
-  }
-
-  NavigationGroup buildLabel(String label, List<Widget> children) {
-    return NavigationGroup(
-      labelAlignment: Alignment.centerLeft,
-      label: Text(label).semiBold.muted.xSmall,
-      children: children,
-    );
-  }
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      headers: [
-        AppBar(
-          backgroundColor: Theme.of(
-            context,
-          ).colorScheme.accent.withValues(alpha: 0.4),
-          leading: [
-            Text("TaskTrack"),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 200,
-              child: TextField(
-                placeholder: Text("Search..."),
-                features: [
-                  InputFeature.leading(
-                    StatedWidget.builder(
-                      builder: (context, states) {
-                        if (states.hovered) {
-                          return const Icon(Icons.search);
-                        } else {
-                          return const Icon(Icons.search).iconMutedForeground();
-                        }
-                      },
+      backgroundColor: AppColors.bg,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 460),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    const LogoSection(),
+                    const SizedBox(height: 40),
+                    const LoginCard(),
+                    const SizedBox(height: 24),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Don't have an account? ",
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text("Create an account?"),
+                        ),
+                      ],
                     ),
-                    visibility: InputFeatureVisibility.textEmpty,
-                  ),
-                  InputFeature.clear(
-                    visibility:
-                        (InputFeatureVisibility.textNotEmpty &
-                            InputFeatureVisibility.focused) |
-                        InputFeatureVisibility.hovered,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ],
-          trailing: [
-            IconButton.ghost(onPressed: () {}, icon: Icon(LucideIcons.bell)),
-          ],
+          ),
         ),
-        const Divider(),
-      ],
-      child: Row(
-        children: [
-          NavigationRail(
-            backgroundColor: Theme.of(
-              context,
-            ).colorScheme.accent.withValues(alpha: 0.4),
-            labelType: NavigationLabelType.expanded,
-            labelPosition: NavigationLabelPosition.end,
-            alignment: NavigationRailAlignment.start,
-            expandedSize: 250,
-            expanded: expanded,
-            footer: [
-              PrimaryButton(
-                onPressed: () {},
-                alignment: Alignment.center,
-                child: const Text("New Task"),
-              ),
-            ],
-            children: [
-              buildLabel("Workspace", [
-                buildButton("Tasks", LucideIcons.clipboardList),
-              ]),
-            ],
-          ),
-          const VerticalDivider(),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TaskScreen(),
-            ),
-          ),
-        ],
       ),
     );
   }
 }
 
-class TaskScreen extends StatefulWidget {
-  const TaskScreen({super.key});
+class LogoSection extends StatelessWidget {
+  const LogoSection({super.key});
 
-  @override
-  State<TaskScreen> createState() => _TaskScreenState();
-}
-
-class _TaskScreenState extends State<TaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Project Velocity").x2Large.bold,
-        const Text(
-          "Manage your high-efficiency workflow for the Q4 sprint.",
-        ).muted,
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            TaskColumn(
-              title: "To Do",
-              children: [
-                TaskCard(
-                  title: "User Persona Analysis",
-                  tag: "Research",
-                  description:
-                      "Gather qualitative data from stakeholder interviews and support tickets to define our core client personas.",
-                ),
-              ],
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            color: const Color(0xFF5B4CF4),
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.deepPurple.withValues(alpha: 0.5),
+                blurRadius: 20,
+              ),
+            ],
+          ),
+          child: const Center(
+            child: Text(
+              "T",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ],
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        const Text(
+          "TaskTrack",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 36,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        Text(
+          "Precicion task management for professionals.",
+          style: TextStyle(color: Colors.grey.shade500),
         ),
       ],
     );
   }
 }
 
-class TaskColumn extends StatelessWidget {
-  final String title;
-  final List<Widget> children;
-
-  const TaskColumn({super.key, required this.title, required this.children});
+class LoginCard extends StatelessWidget {
+  const LoginCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 420,
-      child: Card(
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.accent.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text(title), const SizedBox(height: 16), ...children],
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: Colors.white24),
+        gradient: LinearGradient(
+          colors: [const Color(0xFF191A22), const Color(0xFF111217)],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 40,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Welcome back",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 30),
+
+          _buildField("EMAIL ADDRESS", Icons.mail_outline, "name@company.com"),
+
+          const SizedBox(height: 20),
+
+          _buildField(
+            "PASSWORD",
+            Icons.lock_outline,
+            "••••••••",
+            suffix: Icons.visibility_outlined,
+          ),
+
+          const SizedBox(height: 20),
+
+          Row(
+            children: [
+              Checkbox(value: true, onChanged: (_) {}),
+              const Text(
+                "Stay signed in for 30 days",
+                style: TextStyle(color: Colors.white70),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5B4CF4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Text(
+                "Sign In",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          OutlinedButton(
+            onPressed: () {},
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+              side: const BorderSide(color: Colors.white24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: const Text("⚡ QUICK FILL DEMO USER"),
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            children: const [
+              Expanded(child: Divider(color: Colors.white12)),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  "OR CONTINUE WITH",
+                  style: TextStyle(color: Colors.white38),
+                ),
+              ),
+              Expanded(child: Divider(color: Colors.white12)),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            children: [
+              Expanded(child: _socialButton(Icons.g_mobiledata, "Google")),
+              const SizedBox(width: 12),
+              Expanded(child: _socialButton(Icons.badge_outlined, "SSO Login")),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _socialButton(IconData icon, String text) {
+    return OutlinedButton.icon(
+      onPressed: () {},
+      icon: Icon(icon),
+      label: Text(text),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(0, 50),
+        side: const BorderSide(color: Colors.white12),
+      ),
+    );
+  }
+
+  Widget _buildField(
+    String label,
+    IconData icon,
+    String hint, {
+    IconData? suffix,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white54,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        TextField(
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon),
+            suffixIcon: suffix != null ? Icon(suffix) : null,
+            filled: true,
+            fillColor: Colors.black,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 460),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    const LogoSection(),
+                    const SizedBox(height: 40),
+                    const RegisterCard(),
+                    const SizedBox(height: 24),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Already have an account? ",
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text("Sign In"),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RegisterCard extends StatelessWidget {
+  const RegisterCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: Colors.white24),
+        gradient: LinearGradient(
+          colors: [const Color(0xFF191A22), const Color(0xFF111217)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 40,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Create your workspace",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            "Experience the flow of professional task management.",
+            style: TextStyle(color: Colors.white38),
+          ),
+
+          const SizedBox(height: 30),
+
+          _buildField("EMAIL ADDRESS", Icons.mail_outline, "name@company.com"),
+
+          const SizedBox(height: 20),
+
+          _buildField(
+            "PASSWORD",
+            Icons.lock_outline,
+            "••••••••",
+            suffix: Icons.visibility_outlined,
+          ),
+
+          const SizedBox(height: 20),
+
+          Row(
+            children: [
+              Checkbox(value: true, onChanged: (_) {}),
+              const Text(
+                "Terms of Service and Privacy Policy",
+                style: TextStyle(color: Colors.white70),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5B4CF4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Text(
+                "Create Account",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            children: const [
+              Expanded(child: Divider(color: Colors.white12)),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  "OR CONTINUE WITH",
+                  style: TextStyle(color: Colors.white38),
+                ),
+              ),
+              Expanded(child: Divider(color: Colors.white12)),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            children: [
+              Expanded(child: _socialButton(Icons.g_mobiledata, "Google")),
+              const SizedBox(width: 12),
+              Expanded(child: _socialButton(Icons.badge_outlined, "SSO Login")),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _socialButton(IconData icon, String text) {
+    return OutlinedButton.icon(
+      onPressed: () {},
+      icon: Icon(icon),
+      label: Text(text),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(0, 50),
+        side: const BorderSide(color: Colors.white12),
+      ),
+    );
+  }
+
+  Widget _buildField(
+    String label,
+    IconData icon,
+    String hint, {
+    IconData? suffix,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white54,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        TextField(
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon),
+            suffixIcon: suffix != null ? Icon(suffix) : null,
+            filled: true,
+            fillColor: Colors.black,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      body: Column(
+        children: [
+          // const TopNavBar(),
+          Expanded(
+            child: Row(
+              children: [
+                const Sidebar(),
+
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const DashboardHeader(),
+
+                        const SizedBox(height: 40),
+
+                        Expanded(
+                          child: Row(
+                            children: const [
+                              Expanded(child: KanbanColumn(title: "To Do")),
+
+                              SizedBox(width: 24),
+
+                              Expanded(
+                                child: KanbanColumn(title: "In Progress"),
+                              ),
+
+                              SizedBox(width: 24),
+
+                              Expanded(child: KanbanColumn(title: "Done")),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Sidebar extends StatelessWidget {
+  const Sidebar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 240,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        border: Border(right: BorderSide(color: AppColors.border)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            ListTile(
+              selected: true,
+              leading: const Icon(Icons.text_fields),
+              title: const Text("Tasks"),
+            ),
+            ListTile(
+              title: const Text("Settings"),
+              leading: const Icon(Icons.settings_outlined),
+            ),
+
+            const Spacer(),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.add),
+                label: const Text("New Task"),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class KanbanColumn extends StatelessWidget {
+  final String title;
+
+  const KanbanColumn({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.panel,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+
+              const Spacer(),
+
+              IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          Expanded(
+            child: ListView(
+              children: const [TaskCard(), SizedBox(height: 16), TaskCard()],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class TaskCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final String tag;
-
-  const TaskCard({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.tag,
-  });
+  const TaskCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      filled: true,
-      fillColor: Theme.of(context).colorScheme.accent.withValues(alpha: 0.6),
-      borderRadius: BorderRadius.circular(16),
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PrimaryBadge(child: Text(tag)),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: .15),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: const Text("RESEARCH", style: TextStyle(fontSize: 10)),
+          ),
+
+          const SizedBox(height: 16),
+
+          const Text(
+            "User Persona Analysis",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+
           const SizedBox(height: 8),
-          Text(title).large.bold,
-          Text(description),
+
+          Text(
+            "Gather qualitative data from stakeholders...",
+            style: TextStyle(color: Colors.grey.shade400),
+          ),
+
+          const SizedBox(height: 16),
+
+          LinearProgressIndicator(value: .6, backgroundColor: Colors.white10),
+
+          const SizedBox(height: 16),
+
+          Row(
+            children: [
+              const Icon(Icons.calendar_month, size: 14, color: Colors.grey),
+
+              const SizedBox(width: 6),
+
+              const Text("Oct 24", style: TextStyle(color: Colors.grey)),
+
+              const Spacer(),
+
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: .15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text("High", style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
+}
+
+class DashboardHeader extends StatelessWidget {
+  const DashboardHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Project Velocity",
+          style: TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        Text(
+          "Manage your high-efficiency workflow for the Q4 sprint.",
+          style: TextStyle(color: Colors.grey.shade500, fontSize: 18),
+        ),
+      ],
+    );
+  }
+}
+
+class AppColors {
+  static const bg = Color(0xFF050505);
+  static const panel = Color(0xFF111318);
+  static const card = Color(0xFF181A21);
+  static const border = Color(0xFF262A34);
+  static const primary = Color(0xFF5B4CF4);
+  static const success = Color(0xFF00D68F);
+  static const warning = Color(0xFFFFB020);
+  static const danger = Color(0xFFFF4D67);
+  static const textPrimary = Colors.white;
+  static const textSecondary = Color(0xFF8C919D);
 }
