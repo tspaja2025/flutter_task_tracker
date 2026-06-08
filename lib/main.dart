@@ -16,7 +16,7 @@ class FlutterTaskTracker extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const RegisterScreen(),
+      home: const SettingsScreen(),
     );
   }
 }
@@ -511,7 +511,7 @@ class DashboardScreen extends StatelessWidget {
       backgroundColor: AppColors.bg,
       body: Column(
         children: [
-          // const TopNavBar(),
+          const TopNavBar(),
           Expanded(
             child: Row(
               children: [
@@ -565,7 +565,7 @@ class Sidebar extends StatelessWidget {
     return Container(
       width: 240,
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: AppColors.panel,
         border: Border(right: BorderSide(color: AppColors.border)),
       ),
       child: Padding(
@@ -574,12 +574,8 @@ class Sidebar extends StatelessWidget {
           children: [
             ListTile(
               selected: true,
-              leading: const Icon(Icons.text_fields),
+              leading: const Icon(Icons.text_snippet),
               title: const Text("Tasks"),
-            ),
-            ListTile(
-              title: const Text("Settings"),
-              leading: const Icon(Icons.settings_outlined),
             ),
 
             const Spacer(),
@@ -588,6 +584,10 @@ class Sidebar extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.textPrimary,
+                ),
                 icon: const Icon(Icons.add),
                 label: const Text("New Task"),
               ),
@@ -743,6 +743,236 @@ class DashboardHeader extends StatelessWidget {
 
         Text(
           "Manage your high-efficiency workflow for the Q4 sprint.",
+          style: TextStyle(color: Colors.grey.shade500, fontSize: 18),
+        ),
+      ],
+    );
+  }
+}
+
+class TopNavBar extends StatefulWidget {
+  const TopNavBar({super.key});
+
+  @override
+  State<TopNavBar> createState() => _TopNavBarState();
+}
+
+class _TopNavBarState extends State<TopNavBar> {
+  AnimationStatus _animationStatus = AnimationStatus.dismissed;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: AppColors.panel,
+        border: Border(bottom: BorderSide(color: AppColors.border)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            const Text(
+              "TaskTrack",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(width: 16),
+            SizedBox(
+              width: 200,
+              height: 32,
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Search...",
+                  prefixIcon: Icon(Icons.search),
+                  filled: true,
+                  fillColor: AppColors.card,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+            const Spacer(),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.notifications_outlined,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            MenuAnchor(
+              animated: true,
+              onAnimationStatusChanged: (AnimationStatus status) {
+                _animationStatus = status;
+              },
+              menuChildren: [
+                MenuItemButton(
+                  child: Text("Settings"),
+                ),
+                MenuItemButton(
+                  child: Text("Sign Out"),
+                ),
+              ],
+              builder:
+                  (
+                    BuildContext context,
+                    MenuController controller,
+                    Widget? child,
+                  ) {
+                    return IconButton(
+                      onPressed: () {
+                        if (_animationStatus.isForwardOrCompleted) {
+                          controller.close();
+                        } else {
+                          controller.open();
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.person_outlined,
+                        color: AppColors.textPrimary,
+                      ),
+                    );
+                  },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      body: Column(
+        children: [
+          const TopNavBar(),
+          Expanded(
+            child: Row(
+              children: [
+                const Sidebar(),
+
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SettingsHeader(),
+
+                        const SizedBox(height: 40),
+
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: AppColors.card,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withValues(alpha: .15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text("RESEARCH", style: TextStyle(fontSize: 10)),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          const Text(
+                            "User Persona Analysis",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          Text(
+                            "Gather qualitative data from stakeholders...",
+                            style: TextStyle(color: Colors.grey.shade400),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          LinearProgressIndicator(value: .6, backgroundColor: Colors.white10),
+
+                          const SizedBox(height: 16),
+
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_month, size: 14, color: Colors.grey),
+
+                              const SizedBox(width: 6),
+
+                              const Text("Oct 24", style: TextStyle(color: Colors.grey)),
+
+                              const Spacer(),
+
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withValues(alpha: .15),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Text("High", style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SettingsHeader extends StatelessWidget {
+  const SettingsHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Settings",
+          style: TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        Text(
+          "Manage your account preferences and security settings.",
           style: TextStyle(color: Colors.grey.shade500, fontSize: 18),
         ),
       ],
