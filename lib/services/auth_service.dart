@@ -52,7 +52,7 @@ class AuthService {
     try {
       // POST request to backend
       final response = await _dio.post(
-        '$baseUrl/resgiter',
+        '$baseUrl/register',
         data: {'username': username, 'email': email, 'password': password},
         // options: Options(headers: {'Content-Type': 'application/json'}),
       );
